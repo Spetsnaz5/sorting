@@ -6,6 +6,8 @@
 """
 
 import random
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 # 建立隨機資料
 data = [random.randint(10, 100) for _ in range(20)]
@@ -33,3 +35,22 @@ def partition(arr, low, high):
 
 # 執行排序
 quick_sort(data.copy(), 0, len(data) - 1)
+
+# 設定畫布
+fig, ax = plt.subplots()
+sc = ax.scatter(range(len(data)), data, c='skyblue', s=100)
+ax.set_title("Quick Sort - Scatter Plot Animation")
+ax.set_xlim(-1, len(data))
+ax.set_ylim(0, max(data) + 20)
+
+# 動畫更新函式
+def update(frame):
+    current, i, j = frame
+    colors = ['red' if k == i or k == j else 'skyblue' for k in range(len(current))]
+    sc.set_offsets([[x, y] for x, y in zip(range(len(current)), current)])
+    sc.set_color(colors)
+    ax.set_title(f"Comparing/Swapping: index {i} and {j}")
+
+# 動畫執行
+ani = animation.FuncAnimation(fig, update, frames=steps, interval=300, repeat=False)
+plt.show()
