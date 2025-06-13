@@ -6,6 +6,9 @@
 """
 
 import random
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
 # 隨機資料
 data = [random.randint(10, 100) for _ in range(20)]
 
@@ -13,16 +16,38 @@ print(data)
 
 def sort_steps(arr):
     n = len(arr)
+    steps = []
     for i in range(n):
         min_idx = i
         for j in range(i + 1, n):
+            steps.append((arr.copy(), min_idx, j))  # 比較 i, j
             if arr[j] < arr[min_idx]:
                 min_idx = j
                 
         arr[i], arr[min_idx] = arr[min_idx], arr[i]
-        
-    return arr
+        steps.append((arr.copy(), i, min_idx))  # 交換後的結果
 
-sort = sort_steps(data.copy())
+    print(arr)
+    return steps
 
-print(sort)
+# 執行排序並記錄步驟
+steps = sort_steps(data.copy())
+
+# 畫布設定
+fig, ax = plt.subplots()
+sc = ax.scatter(range(len(data)), data, c='skyblue', s=100)
+ax.set_title("Selection Sort - Scatter Plot Animation")
+ax.set_xlim(-1, len(data))
+ax.set_ylim(0, max(data) + 20)
+
+# 更新動畫的函式
+def update(frame):
+    current, i, j = frame
+    colors = ['red' if k == i or k == j else 'skyblue' for k in range(len(current))]
+    sc.set_offsets([[x, y] for x, y in zip(range(len(current)), current)])
+    sc.set_color(colors)
+    ax.set_title(f"Comparing: index {i} and {j}")
+
+# 動畫
+ani = animation.FuncAnimation(fig, update, frames=steps, interval=100, repeat=False)
+plt.show()
